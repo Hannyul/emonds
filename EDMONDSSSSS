@@ -1,0 +1,241 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package emonds_algorithm;
+
+import java.util.*;
+
+/**
+ *
+ * @author Lenovo
+ */
+public class Emonds_algorithm {
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        
+        int[][] shortex= {
+            {0,2,0,3,0,0},
+            {0,0,5,0,3,0},
+            {0,0,0,0,0,2},
+            {0,0,1,0,0,0},
+            {0,0,0,0,0,4},
+            {0,0,0,0,0,0}
+        };
+       
+        // Initialize the matrix of graph
+        int[][] Graph = {
+            {0, 3, 0, 3, 0, 0, 0},
+            {0, 0, 4, 0, 0, 0, 0},
+            {3, 0, 0, 1, 2, 0, 0},
+            {0, 0, 0, 0, 2, 6, 0},
+            {0, 1, 0, 0, 0, 0, 1},
+            {0, 0, 0, 0, 0, 0, 9},
+            {0, 0, 0, 0, 0, 0, 0}
+        };
+        
+        // initillize 
+        int src = 0;
+        // from 0 to n where is n is the sink
+        int sink = shortex.length-1;
+
+        ArrayList AugPaths = new ArrayList();
+
+        // Call the MaxFlow method, 
+        int[][] result = MaxFlow(shortex, src, sink, AugPaths);
+
+        // put Maximum Flow from the first index in result to max_flow 
+        int max_flow = result[0][0];
+        // put Number of paths from the second index in result to number_of_paths 
+        int number_of_paths = result[0][1];
+
+        System.out.println("~~~Edmonds-Karp Algorithm~~~" + "\n-----------------------------");
+        //print Number of Paths and Paths
+        System.out.println("Number of Paths: " + number_of_paths);
+        System.out.println("Paths: ");
+        System.out.println("From " + src + " To " + sink + "\n---------------");
+
+        //Add next index and source to the  augmenting path
+        AugPaths.add(src,src);
+        for (int i = 0; i < AugPaths.size(); i++) {           
+            int nextINDX = i + 1;
+            if (nextINDX < AugPaths.size()) {
+                int thisValue = (int) AugPaths.get(i);
+                if (thisValue == sink) {
+                    AugPaths.add(nextINDX, src);
+                    continue;
+                }
+
+            }
+
+        }//end for
+
+        for (int j = 0; j < AugPaths.size(); j++) {
+
+            System.out.print(AugPaths.get(j));
+            if ((int) AugPaths.get(j) == sink) {
+                System.out.println("\n");
+            } else {
+                System.out.print(" -> ");
+            }
+
+        }//end for
+        
+        //Print Final Maximum Flow
+        System.out.println("The Final Maximum Flow: " + max_flow);       
+        System.out.println("");
+        
+    } // main 
+    
+    
+    // ******************************************************************
+    
+    // Returns tne maximum flow from s to t in the given graph 
+    public static int[][] MaxFlow(int capacity[][], int src, int sink, ArrayList<Integer> AugPaths) {
+
+        int number_paths = 0;
+        
+        // There is no flow initially 
+        int max_flow = 0;
+        // to store the maximum flow , and the number of paths 
+        int[][] result = new int[1][2];
+       
+        int residualGraph[][] = new int[capacity.length][capacity.length];
+        int[] Map_Parent= new int[capacity.length];      
+        int INF = 9999;
+
+        for (int i = 0; i < capacity.length; i++) {
+            for (int j = 0; j < capacity.length; j++) {
+                // initialize it same as the capacity 
+                // becuase = RC = capacity - flow and the flow initially with zero
+                residualGraph[i][j] = capacity[i][j];
+            }
+        }
+
+        // Edges (u,v) or (i,j)
+        int U;
+        int V;
+        
+        // This array is filled by BFS and to store path 
+        while (isThereAugPath(residualGraph, src, sink, Map_Parent)) {
+
+            // initially inifint from src 
+            int Min_PathFlow = INF;
+
+            for (V = sink; V != src; V = Map_Parent[V]) {
+
+                AugPaths.add(V);
+                U = Map_Parent[V];
+                Min_PathFlow = Math.min(Min_PathFlow, residualGraph[U][V]);
+
+            }
+
+            // we will update each of the forward and backward edges at each iteration
+            for (V= sink; V != src; V= Map_Parent[V]) {
+
+                U = Map_Parent[V];
+                residualGraph[U][V] -= Min_PathFlow;
+                residualGraph[V][U] += Min_PathFlow;
+
+            }
+
+            // summing the maximmum flow 
+            max_flow += Min_PathFlow;
+            number_paths++;
+        }//end while
+
+        //put Maximum Flow in first index and Number of paths in second index
+        result[0][0] = max_flow;
+        result[0][1] = number_paths;
+         
+        Collections.reverse(AugPaths);
+
+        // System.out.println(number_paths);
+        return result;
+    }//end method
+    
+
+    //method to know if there is augmenting path or no
+    public static boolean isThereAugPath(int capacity[][], int src, int sink, int parent_map[]) {
+        // visited or not visited 
+      
+
+        int[][] flow = new int[capacity.length][capacity.length];
+        boolean[] label = new boolean[capacity.length];
+      
+        // initialls every node with false 
+        for (int i = 0; i < label.length; ++i) {
+            label[i] = false;
+        }
+        
+        // Initial flow with zero
+        for (int i = 0; i < flow.length; i++) {
+            for (int j = 0; j < flow[i].length; j++) {
+                flow[i][j] = 0;
+            }
+        }
+        
+        
+        // create the Queue for traversing along the graph using BFS
+        QueueLL Queue = new QueueLL();
+
+        // label source vertex as visited 
+        label[src] = true;
+        Queue.enqueue(src);
+        
+        // initillize the residual capacity 
+        int res_capacity = 0;
+
+        // BFS is running 
+        while (!Queue.isEmpty()) {
+            // pick the front (i)
+            int front = Queue.peek();
+            
+            // this for-loop is simply enqueue the children of the head of the queue (BFS)
+            // forwarding from the front to the child 
+            for (int i = 0; i < capacity.length; i++) {
+              
+                // only if we havent visited this child & check if the res_capacity > 0 
+                if (label[i] != true) {
+                    res_capacity = capacity[front][i] - flow[front][i];
+
+                    if (res_capacity > 0) {
+
+                      
+                        Queue.enqueue(i);
+                        parent_map[i] = front;
+                        label[i] = true;
+
+                    } // if- res > 0
+
+                } // if - unlabeled 
+            } // end for loop 
+
+            // here we are going to move backward, from the child to the front
+            // if only we have flow > 0 
+            for (int j = 0; j < flow.length; j++) {
+
+                if (label[j] != true) {
+                    if (flow[front][j] > 0) {
+                       
+                        parent_map[j] = front;
+                        label[j] = true;
+                        Queue.enqueue(j);
+                    }
+                }
+            } // for 
+
+            Queue.dequeue();
+        }//end while
+       
+        // we reached the sink so there is augmented path 
+        return (label[sink] == true);
+    }//end method
+
+    
+    
+}// class
