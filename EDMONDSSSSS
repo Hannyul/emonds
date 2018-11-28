@@ -1,7 +1,8 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+Group Members:
+      
+Algorithms and Data Structures
+Section CH 
  */
 package emonds_algorithm;
 
@@ -59,13 +60,16 @@ public class Emonds_algorithm {
         System.out.println("Paths: ");
         System.out.println("From " + src + " To " + sink + "\n---------------");
 
-        //Add next index and source to the  augmenting path
-        AugPaths.add(src,src);
+        // just adding the src to all paths 
+        //Add the src in the first path we found 
+        AugPaths.add(0,src);
         for (int i = 0; i < AugPaths.size(); i++) {           
             int nextINDX = i + 1;
             if (nextINDX < AugPaths.size()) {
                 int thisValue = (int) AugPaths.get(i);
-                if (thisValue == sink) {
+                
+                if (thisValue == sink) { 
+                // if there is another path, add the src to it.
                     AugPaths.add(nextINDX, src);
                     continue;
                 }
