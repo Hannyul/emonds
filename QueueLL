@@ -1,7 +1,8 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+Group Members:
+     
+Algorithms and Data Structures
+Section CH 
  */
 package emonds_algorithm;
 
@@ -20,13 +21,7 @@ public class QueueLL {
 		back = null;
     }
 	
-	
-	/* Below are MANY methods that are used on stacks.
-	 * 
-	 * Examples:
-	 * isEmpty, PUSH, POP, PEEK, and more.
-	 */
-	
+
 	
 	//
 	// boolean | isEmpty()
@@ -36,53 +31,6 @@ public class QueueLL {
 	}
 	
 	
-	//
-	// void | PrintQueue()
-	//
-	public void PrintQueue() {
-		PrintQueue(front);
-	}
-	//
-	// void | PrintQueue(QueueNode)
-	//
-	private void PrintQueue(QueueNode front) {
-		// We need to traverse...so we need a help ptr
-		QueueNode helpPtr = front;
-		// Traverse to correct insertion point
-		while (helpPtr != null) {
-			// Print the data value of the node
-			System.out.print(helpPtr.getData() + ", ");
-			// Step one node over
-			helpPtr = helpPtr.getNext();
-		}
-		System.out.println();
-	}
-	
-	
-	//
-	// boolean | search(int)
-	//
-	public boolean search(int data) {
-		return search(front, data);
-	}
-	//
-	// boolean | search(QueueNode, int)
-	//
-	private boolean search(QueueNode p, int data) {
-		// To search, we must traverse. Therefore, we need helpPtr.
-		QueueNode helpPtr = p;
-		while (helpPtr != null) {
-			if (helpPtr.getData() == data)
-				return true;
-			helpPtr = helpPtr.getNext(); // step one node over		
-		}
-		return false;
-	}
-	
-	
-	//
-	// void | enqueue(int)
-	//
 	public void enqueue(int data) {
 		if (isEmpty()) {
 			front = back = enqueue(front, back, data);
