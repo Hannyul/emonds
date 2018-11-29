@@ -1,8 +1,9 @@
 /*
  Group Members:
-       
+   
  Algorithms and Data Structures
- Section CH 
+Section CH 
+Project 8 - Implementing Edmonds-karp Algorithm
  */
 package emonds_algorithm;
 
@@ -18,7 +19,7 @@ public class Emonds_algorithm {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-//        
+////        
 //        int[][] Graph= {
 //            {0,2,0,3,0,0},
 //            {0,0,5,0,3,0},
@@ -48,7 +49,7 @@ public class Emonds_algorithm {
 
         System.out.println("~~~Edmonds-Karp Algorithm~~~" + "\n-----------------------------");
 
-        System.out.println("From Source: " + src + " To Sink: " + sink + "\n-----------------------------\n");
+        System.out.println("From Source: " + src + " to Sink: " + sink + "\n-----------------------------\n");
 
         // Call the MaxFlow method, 
         int[][] result = MaxFlow(Graph, src, sink, AugPaths);
@@ -142,6 +143,7 @@ public class Emonds_algorithm {
             // initially inifint from src 
             int Min_PathFlow = INF;
 
+            // because src has no parent so we will stop if we reaches the parent
             for (V = sink; V != src; V = Map_Parent[V]) {
 
                 AugPaths.add(V);
@@ -171,6 +173,8 @@ public class Emonds_algorithm {
         result[0][0] = max_flow;
         result[0][1] = number_paths;
 
+        // becuase when we reach the sink we move backwards towards source
+        // so we need to reverse it
         Collections.reverse(AugPaths);
 
         // System.out.println(number_paths);
@@ -179,7 +183,7 @@ public class Emonds_algorithm {
 
     // *******************************************************
     //method to know if there is augmenting path or no
-    public static boolean isThereAugPath(int[][] capacity, int src, int sink, int parent_map[], int[][] flow) {
+    public static boolean isThereAugPath(int[][] capacity, int src, int sink, int[] Map_Parent, int[][] flow) {
 
         // ***************initials*************     
         // to endicate if the node if visited (labeled) in the BFS
@@ -216,7 +220,7 @@ public class Emonds_algorithm {
                     // if we have a resudual capacity to move on forward, enqueue the node
                     if (res_capacity > 0) {
                         Queue.enqueue(i);
-                        parent_map[i] = front;
+                        Map_Parent[i] = front;
                         label[i] = true;
 
                     } // if- res > 0
@@ -230,7 +234,7 @@ public class Emonds_algorithm {
 
                 if (label[j] != true) {
                     if (flow[front][j] > 0) {
-                        parent_map[j] = front;
+                        Map_Parent[j] = front;
                         label[j] = true;
                         Queue.enqueue(j);
                     }
