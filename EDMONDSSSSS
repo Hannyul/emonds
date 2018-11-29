@@ -1,10 +1,10 @@
 /*
-Group Members:
-Hana'a Al-Lohibi            
-Bashair Atif Abdulrazak       
-Maha Osama        
-Algorithms and Data Structures
-Section CH 
+ Group Members:
+ Hana'a Al-Lohibi            
+ Bashair Atif Abdulrazak       
+ Maha Osama        
+ Algorithms and Data Structures
+ Section CH 
  */
 package emonds_algorithm;
 
@@ -29,7 +29,7 @@ public class Emonds_algorithm {
 //            {0,0,0,0,0,4},
 //            {0,0,0,0,0,0}
 //        };
-       
+
         // Initialize the matrix of graph
         int[][] Graph = {
             {0, 3, 0, 3, 0, 0, 0},
@@ -40,13 +40,17 @@ public class Emonds_algorithm {
             {0, 0, 0, 0, 0, 0, 9},
             {0, 0, 0, 0, 0, 0, 0}
         };
-        
+
         // initillize 
         int src = 0;
         // from 0 to n where is n is the sink
-        int sink = Graph.length-1;
+        int sink = Graph.length - 1;
 
         ArrayList AugPaths = new ArrayList();
+
+        System.out.println("~~~Edmonds-Karp Algorithm~~~" + "\n-----------------------------");
+
+        System.out.println("From Source: " + src + " To Sink: " + sink + "\n-----------------------------\n");
 
         // Call the MaxFlow method, 
         int[][] result = MaxFlow(Graph, src, sink, AugPaths);
@@ -56,20 +60,20 @@ public class Emonds_algorithm {
         // put Number of paths from the second index in result to number_of_paths 
         int number_of_paths = result[0][1];
 
-        System.out.println("~~~Edmonds-Karp Algorithm~~~" + "\n-----------------------------");
         //print Number of Paths and Paths
         System.out.println("Number of Paths: " + number_of_paths);
-     
+
+        System.out.println("---------------------\n\nAll possible Paths in Graph: \n");
         // just adding the src to all paths 
         //Add the src in the first path we found 
-        AugPaths.add(0,src);
-        for (int i = 0; i < AugPaths.size(); i++) {           
+        AugPaths.add(0, src);
+        for (int i = 0; i < AugPaths.size(); i++) {
             int nextINDX = i + 1;
             if (nextINDX < AugPaths.size()) {
                 int thisValue = (int) AugPaths.get(i);
-                
-                if (thisValue == sink) { 
-                // if there is another path,then add the src to it.
+
+                if (thisValue == sink) {
+                    // if there is another path,then add the src to it.
                     AugPaths.add(nextINDX, src);
                     continue;
                 }
@@ -78,55 +82,49 @@ public class Emonds_algorithm {
 
         }//end for
 
-        System.out.println("---------------------\nAll possible Paths in Graph: ");
-        System.out.println("From Source: " + src + " To Sink: " + sink + "\n---------------------");
-        
         for (int j = 0; j < AugPaths.size(); j++) {
 
             System.out.print(AugPaths.get(j));
             if ((int) AugPaths.get(j) == sink) {
-            System.out.println("\n");
+                System.out.println("\n");
             } else {
                 System.out.print(" -> ");
             }
 
         }//end for
-        
+
         //Print Final Maximum Flow
-        System.out.println("The Final Maximum Flow: " + max_flow);       
+        System.out.println("The Final Maximum Flow: " + max_flow);
         System.out.println("");
-        
+
     } // main 
-    
-    
+
     // ******************************************************************
-    
     // Returns tne maximum flow from s to t in the given graph 
     public static int[][] MaxFlow(int capacity[][], int src, int sink, ArrayList AugPaths) {
 
         // -----------Initials------------
-        
         // number of paths so far
         int number_paths = 0;
-        
+
         // There is no flow initially 
         int max_flow = 0;
         // to store the maximum flow , and the number of paths 
         int[][] result = new int[1][2];
-       
+
         int[][] residual_graph = new int[capacity.length][capacity.length];
-        int[] Map_Parent= new int[capacity.length];      
+        int[] Map_Parent = new int[capacity.length];
         int INF = 9999;
 
         int[][] flow = new int[capacity.length][capacity.length];
-          
-           // Initial flow with zero
+
+        // Initial flow with zero
         for (int i = 0; i < flow.length; i++) {
             for (int j = 0; j < flow[i].length; j++) {
                 flow[i][j] = 0;
             }
         }
-        
+
         for (int i = 0; i < capacity.length; i++) {
             for (int j = 0; j < capacity.length; j++) {
                 // initialize it same as the capacity 
@@ -134,14 +132,12 @@ public class Emonds_algorithm {
                 residual_graph[i][j] = capacity[i][j];
             }
         }
-        
-          
-        /// -------------------------------------------------------------
 
+        /// -------------------------------------------------------------
         // Edges (u,v) or (i,j)
         int U;
         int V;
-        
+
         // This array is filled by BFS and to store path 
         while (isThereAugPath(residual_graph, src, sink, Map_Parent, flow)) {
 
@@ -157,7 +153,7 @@ public class Emonds_algorithm {
             }
 
             // we will update each of the forward and backward edges at each iteration
-            for (V= sink; V != src; V= Map_Parent[V]) {
+            for (V = sink; V != src; V = Map_Parent[V]) {
 
                 U = Map_Parent[V];
                 residual_graph[U][V] -= Min_PathFlow;
@@ -168,29 +164,29 @@ public class Emonds_algorithm {
             // summing the maximmum flow 
             max_flow += Min_PathFlow;
             number_paths++;
+
+            System.out.println("Path " + number_paths + ": " + " Min Flow = " + Min_PathFlow + "\n");
+
         }//end while
 
-        
         //put Maximum Flow in first index and Number of paths in second index
         result[0][0] = max_flow;
         result[0][1] = number_paths;
-         
+
         Collections.reverse(AugPaths);
 
         // System.out.println(number_paths);
         return result;
     }//end method
-    
+
     // *******************************************************
-
     //method to know if there is augmenting path or no
-    public static boolean isThereAugPath(int[][] capacity, int src, int sink, int parent_map[],int[][] flow) {
-       
-        // ***************initials*************     
+    public static boolean isThereAugPath(int[][] capacity, int src, int sink, int parent_map[], int[][] flow) {
 
+        // ***************initials*************     
         // to endicate if the node if visited (labeled) in the BFS
         boolean[] label = new boolean[capacity.length];
-      
+
         // initialls every node with false, hasnt visited before 
         for (int i = 0; i < label.length; ++i) {
             label[i] = false;
@@ -202,7 +198,7 @@ public class Emonds_algorithm {
         // label source vertex as visited 
         label[src] = true;
         Queue.enqueue(src);
-        
+
         // initillize the residual capacity 
         int res_capacity = 0;
 
@@ -210,11 +206,11 @@ public class Emonds_algorithm {
         while (!Queue.isEmpty()) {
             // pick the front (i)
             int front = Queue.peek();
-            
+
             // this for-loop is simply enqueue the children of the head of the queue (BFS)
             // forwarding from the front to the child 
             for (int i = 0; i < capacity.length; i++) {
-              
+
                 // only if we havent visited this child & check if the res_capacity > 0 
                 if (label[i] != true) {
                     res_capacity = capacity[front][i] - flow[front][i];
@@ -235,7 +231,7 @@ public class Emonds_algorithm {
             for (int j = 0; j < flow.length; j++) {
 
                 if (label[j] != true) {
-                    if (flow[front][j] > 0) {                      
+                    if (flow[front][j] > 0) {
                         parent_map[j] = front;
                         label[j] = true;
                         Queue.enqueue(j);
@@ -245,11 +241,9 @@ public class Emonds_algorithm {
 
             Queue.dequeue();
         }//end while
-       
+
         // we reached the sink so there is augmented path 
         return (label[sink] == true);
     }//end method
 
-    
-    
 }// class
